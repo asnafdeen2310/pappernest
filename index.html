@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PaperNest - Document Storage</title>
+<link rel="icon" href="logo.png" type="image/png">
+
+<style>
+body {font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg,#1e3c72,#2a5298); margin:0; padding:0; color:#fff;}
+.app-container {max-width:650px; margin:0 auto; padding:20px; text-align:center;}
+.logo-circle {width:130px; height:130px; margin:0 auto; background:linear-gradient(135deg,#4e4eff,#6e6eff); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:50px; color:white; box-shadow:0 15px 25px rgba(0,0,0,0.3); animation:float 3s ease-in-out infinite;}
+.logo-text {margin-top:15px; font-size:28px; font-weight:bold; color:#ffffff;}
+@keyframes float {0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+nav {margin:25px 0; overflow-x:auto;}
+.nav-buttons {display:flex; gap:10px;}
+.nav-buttons button {background-color:#4e4eff; color:white; border:none; padding:12px 18px; border-radius:8px; cursor:pointer; flex-shrink:0; font-weight:500; transition:all 0.3s ease;}
+.nav-buttons button:hover {background-color:#6e6eff; transform:translateY(-2px);}
+.section {display:none; background:white; border-radius:12px; padding:25px; margin-bottom:25px; box-shadow:0 12px 25px rgba(0,0,0,0.3); transition: transform 0.3s ease, box-shadow 0.3s ease; color:#333;}
+.section:hover {transform:translateY(-3px);}
+.section h2 {font-size:22px; margin-bottom:15px; color:#1e3c72;}
+.file-input-container {display:flex; justify-content:center; gap:15px; flex-wrap:wrap; margin-bottom:15px;}
+.custom-btn {background-color:#6e6eff; color:white; border:none; padding:12px 20px; border-radius:12px; cursor:pointer; font-weight:600; font-size:16px; box-shadow:0 6px 12px rgba(0,0,0,0.2); transition:all 0.3s ease;}
+.custom-btn:hover {background-color:#4e4eff; transform:translateY(-2px);}
+input[type="file"] {display:none;}
+.camera-container {margin:10px 0; display:none;}
+.camera-container video {width:100%; max-height:300px; border-radius:10px; border:1px solid #ddd;}
+.camera-container button {margin-top:5px; padding:8px 16px; border-radius:8px; border:none; background-color:#6e6eff; color:white; cursor:pointer; font-weight:500; margin-right:5px;}
+.images-wrapper {display:flex; flex-wrap:wrap; gap:10px; justify-content:center;}
+.img-container {position:relative; width:150px; height:150px; box-shadow:0 8px 20px rgba(0,0,0,0.3); border-radius:12px; overflow:hidden; background:#fff;}
+.img-container img {width:100%; height:100%; object-fit:cover; cursor:pointer; transition: transform 0.2s ease;}
+.img-container:hover img {transform: scale(1.05);}
+.delete-btn {position:absolute; top:5px; right:5px; background:rgba(255,0,0,0.85); color:white; border:none; border-radius:6px; padding:2px 6px; font-size:12px; font-weight:bold; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,0.3); opacity:0; transition:all 0.2s ease;}
+.img-container:hover .delete-btn {opacity:1;}
+#imageModal {display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); justify-content:center; align-items:center; z-index:1000;}
+#imageModal img {max-width:90%; max-height:90%; border-radius:10px;}
+#closeModal {position:absolute; top:20px; right:30px; font-size:40px; color:white; cursor:pointer;}
+.footer {margin-top:30px; font-size:14px; color:#ccc; text-align:center;}
+.footer a {color:#ccc; text-decoration:none;}
+.footer a:hover {text-decoration:underline;}
+</style>
+</head>
+<body>
+<div class="app-container">
+    <div class="logo-circle">🪹</div>
+    <h1 class="logo-text">PaperNest</h1>
+
+    <nav>
+        <div class="nav-buttons">
+            <button onclick="showSection('drivingLicence')">Driving Licence</button>
+            <button onclick="showSection('aadhaarCard')">Aadhaar Card</button>
+            <button onclick="showSection('tenth')">10th</button>
+            <button onclick="showSection('eleventh')">11th</button>
+            <button onclick="showSection('twelfth')">12th</button>
+            <button onclick="showSection('voterID')">Voter ID</button>
+            <button onclick="showSection('collegeMarks')">College Marks</button>
+        </div>
+    </nav>
+
+    <!-- Sections -->
+    <div class="section" id="drivingLicence">
+        <h2>Driving Licence</h2>
+        <div class="file-input-container">
+            <label class="custom-btn" for="drivingLicenceInput">Choose File</label>
+            <input type="file" accept="image/*" id="drivingLicenceInput" multiple>
+            <button class="custom-btn" onclick="openCamera('drivingLicence')">Take Photo</button>
+        </div>
+        <div id="drivingLicenceCamera" class="camera-container">
+            <video autoplay></video>
+            <button onclick="capturePhoto('drivingLicence')">Capture</button>
+            <button onclick="closeCamera('drivingLicence')">Close</button>
+        </div>
+        <div class="images-wrapper" id="drivingLicenceWrapper"></div>
+    </div>
+
+    <div class="section" id="aadhaarCard">
+        <h2>Aadhaar Card</h2>
+        <div class="file-input-container">
+            <label class="custom-btn" for="aadhaarCardInput">Choose File</label>
+            <input type="file" accept="image/*" id="aadhaarCardInput" multiple>
+            <button class="custom-btn" onclick="openCamera('aadhaarCard')">Take Photo</button>
+        </div>
+        <div id="aadhaarCardCamera" class="camera-container">
+            <video autoplay></video>
+            <button onclick="capturePhoto('aadhaarCard')">Capture</button>
+            <button onclick="closeCamera('aadhaarCard')">Close</button>
+        </div>
+        <div class="images-wrapper" id="aadhaarCardWrapper"></div>
+    </div>
+
+    <div class="section" id="tenth">
+        <h2>10th Certificate</h2>
+        <div class="file-input-container">
+            <label class="custom-btn" for="tenthInput">Choose File</label>
+            <input type="file" accept="image/*" id="tenthInput" multiple>
+            <button class="custom-btn" onclick="openCamera('tenth')">Take Photo</button>
+        </div>
+        <div id="tenthCamera" class="camera-container">
+            <video autoplay></video>
+            <button onclick="capturePhoto('tenth')">Capture</button>
+            <button onclick="closeCamera('tenth')">Close</button>
+        </div>
+        <div class="images-wrapper" id="tenthWrapper"></div>
+    </div>
+
+    <div class="section" id="eleventh">
+        <h2>11th Certificate</h2>
+        <div class="file-input-container">
+            <label class="custom-btn" for="eleventhInput">Choose File</label>
+            <input type="file" accept="image/*" id="eleventhInput" multiple>
+            <button class="custom-btn" onclick="openCamera('eleventh')">Take Photo</button>
+        </div>
+        <div id="eleventhCamera" class="camera-container">
+            <video autoplay></video>
+            <button onclick="capturePhoto('eleventh')">Capture</button>
+            <button onclick="closeCamera('eleventh')">Close</button>
+        </div>
+        <div class="images-wrapper" id="eleventhWrapper"></div>
+    </div>
+
+    <div class="section" id="twelfth">
+        <h2>12th Certificate</h2>
+        <div class="file-input-container">
+            <label class="custom-btn" for="twelfthInput">Choose File</label>
+            <input type="file" accept="image/*" id="twelfthInput" multiple>
+            <button class="custom-btn" onclick="openCamera('twelfth')">Take Photo</button>
+        </div>
+        <div id="twelfthCamera" class="camera-container">
+            <video autoplay></video>
+            <button onclick="capturePhoto('twelfth')">Capture</button>
+            <button onclick="closeCamera('twelfth')">Close</button>
+        </div>
+        <div class="images-wrapper" id="twelfthWrapper"></div>
+    </div>
+
+    <div class="section" id="voterID">
+        <h2>Voter ID</h2>
+        <div class="file-input-container">
+            <label class="custom-btn" for="voterIDInput">Choose File</label>
+            <input type="file" accept="image/*" id="voterIDInput" multiple>
+            <button class="custom-btn" onclick="openCamera('voterID')">Take Photo</button>
+        </div>
+        <div id="voterIDCamera" class="camera-container">
+            <video autoplay></video>
+            <button onclick="capturePhoto('voterID')">Capture</button>
+            <button onclick="closeCamera('voterID')">Close</button>
+        </div>
+        <div class="images-wrapper" id="voterIDWrapper"></div>
+    </div>
+
+    <div class="section" id="collegeMarks">
+        <h2>College Marks</h2>
+        <div class="file-input-container">
+            <label class="custom-btn" for="collegeMarksInput">Choose File</label>
+            <input type="file" accept="image/*" id="collegeMarksInput" multiple>
+            <button class="custom-btn" onclick="openCamera('collegeMarks')">Take Photo</button>
+        </div>
+        <div id="collegeMarksCamera" class="camera-container">
+            <video autoplay></video>
+            <button onclick="capturePhoto('collegeMarks')">Capture</button>
+            <button onclick="closeCamera('collegeMarks')">Close</button>
+        </div>
+        <div class="images-wrapper" id="collegeMarksWrapper"></div>
+    </div>
+
+    <div class="footer">
+        Created with 🐦‍🔥 by <strong>Asnafdeen</strong> | Contact: <a href="mailto:asnafdeen2310206@gmail.com">asnafdeen2310206@gmail.com</a>
+    </div>
+</div>
+
+<!-- Image Modal -->
+<div id="imageModal">
+    <span id="closeModal">&times;</span>
+    <img id="modalImg" src="">
+</div>
+
+<script>
+let currentStream=null;
+function showSection(sectionId){document.querySelectorAll('.section').forEach(sec=>sec.style.display='none');document.getElementById(sectionId).style.display='block';}
+showSection('drivingLicence');
+
+function handleUpload(inputId, wrapperId, storageKey){
+    const input=document.getElementById(inputId);
+    const wrapper=document.getElementById(wrapperId);
+    const savedImages=JSON.parse(localStorage.getItem(storageKey))||[];
+    savedImages.forEach(src=>addImage(src,wrapper,storageKey));
+    input.addEventListener('change',()=>{Array.from(input.files).forEach(file=>{const reader=new FileReader();reader.onload=e=>{const src=e.target.result;addImage(src,wrapper,storageKey);const images=JSON.parse(localStorage.getItem(storageKey))||[];images.push(src);localStorage.setItem(storageKey,JSON.stringify(images));};reader.readAsDataURL(file);});});
+}
+
+function addImage(src, wrapper, storageKey){
+    const div=document.createElement('div');div.className='img-container';div.innerHTML=`<img src="${src}"><button class="delete-btn">Delete</button>`;wrapper.appendChild(div);
+    div.querySelector('.delete-btn').onclick=()=>{div.remove();const images=JSON.parse(localStorage.getItem(storageKey))||[];const index=images.indexOf(src);if(index>-1){images.splice(index,1);localStorage.setItem(storageKey,JSON.stringify(images));}};
+    div.querySelector('img').onclick=()=>{document.getElementById('imageModal').style.display='flex';document.getElementById('modalImg').src=src;};
+}
+
+['drivingLicence','aadhaarCard','tenth','eleventh','twelfth','voterID','collegeMarks'].forEach(s=>handleUpload(s+'Input',s+'Wrapper',s));
+
+function openCamera(sectionId){const container=document.getElementById(sectionId+'Camera');container.style.display='block';const video=container.querySelector('video');navigator.mediaDevices.getUserMedia({video:true}).then(stream=>{currentStream=stream;video.srcObject=stream;}).catch(err=>alert('Camera not accessible: '+err));}
+function capturePhoto(sectionId){const container=document.getElementById(sectionId+'Camera');const video=container.querySelector('video');const canvas=document.createElement('canvas');canvas.width=video.videoWidth;canvas.height=video.videoHeight;canvas.getContext('2d').drawImage(video,0,0,canvas.width,canvas.height);const src=canvas.toDataURL('image/png');addImage(src,document.getElementById(sectionId+'Wrapper'),sectionId);const images=JSON.parse(localStorage.getItem(sectionId))||[];images.push(src);localStorage.setItem(sectionId,JSON.stringify(images));closeCamera(sectionId);}
+function closeCamera(sectionId){const container=document.getElementById(sectionId+'Camera');container.style.display='none';if(currentStream){currentStream.getTracks().forEach(track=>track.stop());currentStream=null;}}
+document.getElementById('closeModal').onclick=()=>document.getElementById('imageModal').style.display='none';
+</script>
+</body>
+</html>
